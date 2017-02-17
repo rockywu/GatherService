@@ -42,8 +42,9 @@ if(!fs.existsSync(file)) {
     process.exit(1);
 }
 var paths = path.parse(outfile);
-
+console.time("UaParse-Handle");
 uaParse.formatXls(file, function(data) {
+    console.timeEnd("UaParse-Handle");
     try {
         if(!fs.existsSync(paths.dir)) {
             mkdirp.sync(paths.dir);
