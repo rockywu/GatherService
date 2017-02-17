@@ -1,0 +1,21 @@
+{
+  "name": "GatherService",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.4",
+    "colors": "^1.1.2",
+    "commander": "^2.9.0",
+    "detector": "^2.5.0",
+    "mkdirp": "^0.5.1",
+    "underscore": "^1.8.3",
+    "xlsjs": "^0.7.5"
+  }
+}
