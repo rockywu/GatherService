@@ -11,34 +11,42 @@ function totalizer(a, b) {
 //ua解析
 exports.formatXls = formatXls;
 function formatXls(filePath, cb) {
-    cb = typeof cb != 'function'? function() {} : cb;
+    cb = typeof cb != 'function' ? function () {} : cb;
     var data = xlsParse(filePath, null);
     var result = {};
-    async.eachLimit(data, 500, function(row, cb) {
+    function parallel(row, cb) {
+        cb = typeof cb != 'function' ? function() {} : cb;
         var parse = detector.parse(row.user_agent);
         var bname = parse.browser.name;
         var dname = parse.device.name;
         var oname = parse.os.name;
         var browser, device, os;
-        if(!(browser = result[bname])) {
+        if (!(browser = result[bname])) {
             browser = result[bname] = {
-                device : {},
-                os : {},
-                cnt : 0
+                device: {},
+                os: {},
+                cnt: 0
             }
         }
-        if(!(device = browser.device[dname]) ) {
-            device =  browser.device[dname] = 0;
+        if (!(device = browser.device[dname])) {
+            device = browser.device[dname] = 0;
         }
-        if(!(os = browser.os[oname])) {
-            os =  browser.os[oname] = {};
+        if (!(os = browser.os[oname])) {
+            os = browser.os[oname] = {};
         }
         browser.device[dname] = totalizer(browser.device[dname], row.cnt);
-        var ov =  oname == "na" ? oname : oname + parse.os.version;
+        var ov = oname == "na" ? oname : oname + parse.os.version;
         os[ov] = totalizer(os[ov], row.cnt);
-        browser.cnt =  totalizer(browser.cnt, row.cnt);
+        browser.cnt = totalizer(browser.cnt, row.cnt);
+        browser = null;
+        os = null;
+        device = null;
         cb(null);
-    }, function(err) {
+    }
+    async.parallel(data.map(function(row) {
+        return async.apply(parallel, row);
+    }), function(err) {
         cb(result);
-    })
+    });
 }
+
